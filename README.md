@@ -3,7 +3,12 @@ Design and Implementation of a perceptron to utilize machine learning for image 
 
 # Motivation
 To combine learning (perceptrons) with clustering (agglomerative) similarity measures. This program trains perceptrons based on a training set of (depth) images, and then defines a distance measure based on those perceptrons.
-It will then use that distance measure to cluster a test set of (depth) images. 
+It will then use that distance measure to cluster a test set of (depth) images. I also sought to familiarize myself with another style of documentation in JavaDocs, which is shown in the files herein.
+
+# Definition: Perceptron
+- Perceptron - The simplest type of artificial neural network, perceptrons act as a binary classifier which maps multiple inputs into a single output value.
+- Perceptrons will take in n inputs ($x_{1}$, $x_{2}$, ..., $x_{n}$) and qualify them with n weights ($w_{1}$, $w_{2}$, $w_{n}$), often include a bias (b).
+- The perceptron will then calculate the weighted sum of inputs + bias as $\sum$ $w_{i}$ $x_{i}$ + $b$
 
 # Task 
 This program expects three inputs. The first is the training set, expressed as a file of depth image file names. The second is the test set, also expressed as a file of (usually different) depth image names.  The third argument is K, the number of clusters for the program to make. It is assumed that K is an integer greater than zero.
