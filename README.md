@@ -71,4 +71,5 @@ The final product achieved:
 - Full JavaDoc documentation
 - Perceptron classes with learning capabilities, used to calculate distance measures from training set
 - Minimal run-time
+
 The next steps are to link this into other types of images and external APIs. I plan to use an open database such as NASA's to use a set of images to train, and then find the most similar images from the database and effectively "sort" the images. I could also see this used as a tool for custom "slideshow" mechanics such as with desktop images.
