@@ -2,8 +2,11 @@
 Design and Implementation of a perceptron to utilize machine learning for image analysis.
 
 # Motivation
-To combine learning (perceptrons) with clustering (agglomerative) similarity measures. This program trains perceptrons based on a training set of (depth) images, and then defines a distance measure based on those perceptrons.
-It will then use that distance measure to cluster a test set of (depth) images. I also sought to familiarize myself with another style of documentation in JavaDocs, which is shown in the files herein.
+- To combine learning (perceptrons) with clustering (agglomerative) similarity measures. This program trains perceptrons based on a training set of (depth) images, and then defines a distance measure based on those perceptrons.
+It will then use that distance measure to cluster a test set of (depth) images.
+- Familiarize myself with another style of documentation in JavaDocs.
+- Make use of gradle as a build tool
+- Utilize JUnit testing, and evaluate code coverage using jacoco
 
 # Definition: Perceptron
 - Perceptron - The simplest type of artificial neural network, perceptrons act as a binary classifier which maps multiple inputs into a single output value.
@@ -20,3 +23,52 @@ This program expects three inputs. The first is the training set, expressed as a
 $sim(i,j) = \sum_{n=1}^{N} (\frac{1}{(y_{n,i} - y_{n,j})^2})$
 
 - Using this similarity measure, this program uses agglomerative clustering to cluster the test images into K clusters.
+
+# Results
+I developed this incrementally, beginning with basics and building upon them with each iteration. I used gradle to build and manage packages, and Git / Github for version control. The development pipeline was as such:
+```text
+Create Histograms
+From image data files
+     │
+     ▼
+Normalize Histograms &
+  Compare
+     │
+     ▼
+Create Normalized Histograms
+From image files & compare
+     │
+     ▼
+Compare sets of images,
+Finding the closest match
+     │
+     ▼
+Cluster similar images
+using Agglomerative Clustering
+     │
+     ▼
+Introduce different comparison
+methods (NormHist, NormHist4, and
+InvSquareDiff)
+     │
+     ▼
+Add image categorization based
+on description field to
+comparison consideration &
+cluster evaluation
+     │
+     ▼
+Create Perceptron and practice
+training them
+     │
+     ▼
+Train Perceptrons on set of images, then
+use them to cluster input images by
+comparison and distance measures
+```
+The final product achieved:
+- 95% testing coverage (line, branch, and path)
+- Full JavaDoc documentation
+- Perceptron classes with learning capabilities, used to calculate distance measures from training set
+- Minimal run-time
+The next steps are to link this into other types of images and external APIs. I plan to use an open database such as NASA's to use a set of images to train, and then find the most similar images from the database and effectively "sort" the images. I could also see this used as a tool for custom "slideshow" mechanics such as with desktop images.
