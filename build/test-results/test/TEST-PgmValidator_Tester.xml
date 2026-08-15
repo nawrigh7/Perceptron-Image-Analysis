@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="PgmValidator_Tester" tests="17" skipped="0" failures="0" errors="0" timestamp="2024-11-26T04:57:50" hostname="seoul" time="0.39">
+  <properties/>
+  <testcase name="tooShortNameFails()" classname="PgmValidator_Tester" time="0.001"/>
+  <testcase name="invalidHeightFails()" classname="PgmValidator_Tester" time="0.019"/>
+  <testcase name="imagesByClassMapKeysCreatedProperly()" classname="PgmValidator_Tester" time="0.082"/>
+  <testcase name="nonexistantPgmFails()" classname="PgmValidator_Tester" time="0.012"/>
+  <testcase name="invalidDimsFail()" classname="PgmValidator_Tester" time="0.019"/>
+  <testcase name="txtTurduckenFails()" classname="PgmValidator_Tester" time="0.0"/>
+  <testcase name="emptyPgmFails()" classname="PgmValidator_Tester" time="0.006"/>
+  <testcase name="invalidPxFails()" classname="PgmValidator_Tester" time="0.019"/>
+  <testcase name="objectCreationSuccess()" classname="PgmValidator_Tester" time="0.077"/>
+  <testcase name="invalidWidthFails()" classname="PgmValidator_Tester" time="0.012"/>
+  <testcase name="nonClassNameFails()" classname="PgmValidator_Tester" time="0.001"/>
+  <testcase name="invalidFormatFails()" classname="PgmValidator_Tester" time="0.019"/>
+  <testcase name="defaultConstructorDoesNothing()" classname="PgmValidator_Tester" time="0.0"/>
+  <testcase name="nonIntegerValueFails()" classname="PgmValidator_Tester" time="0.013"/>
+  <testcase name="imagesByClassMapValuesCreatedProperly()" classname="PgmValidator_Tester" time="0.079"/>
+  <testcase name="invalidClassFails()" classname="PgmValidator_Tester" time="0.011"/>
+  <testcase name="negativeNameFails()" classname="PgmValidator_Tester" time="0.016"/>
+  <system-out><![CDATA[0
+class0_1.pgm
+class0_2.pgm
+class0_3.pgm
+class0_4.pgm
+class0_5.pgm
+class0_6.pgm
+class0_7.pgm
+class0_8.pgm
+class0_9.pgm
+class0_10.pgm
+class0_11.pgm
+class0_12.pgm
+class0_13.pgm
+class0_14.pgm
+class0_15.pgm
+]]></system-out>
+  <system-err><![CDATA[Error - the supplied string (no) is too short to possibly be a valid file.
+Error - an integer value is outside of the 0-255 range in class03_1.pgm
+Error - the filename (/s/bach/n/under/nawrigh7/CS214_FA24/pa9-nawrigh7/input_files/invalidTxts/errorCases/class99_99.pgm) supplied at the command line does not exist.
+Error - the file class05_1.pgm does not have the expected dimensions of 16
+Error - the filename input_files/invalidTxts/errorCases/class07_1.txt is not a .pgm file. Please supply a text file containing only images of the file type .pgm
+Error - the filename (/s/bach/n/under/nawrigh7/CS214_FA24/pa9-nawrigh7/input_files/invalidTxts/errorCases/empty.pgm) supplied at the command line does not exist.
+Error - an integer value is outside of the 0-255 range in class04_1.pgm
+Error - an integer value is outside of the 0-255 range in class02_1.pgm
+Error - the filename (/s/bach/n/under/nawrigh7/CS214_FA24/pa9-nawrigh7/input_files/invalidTxts/containsNonClassName.txt) supplied at the command line does not exist.
+Error - the expected format value of P2 was not found in file: class00_1.pgm
+Error - the fileclass01_1.pgm contains a non-integer value
+Error - the file name classM_1.pgm is not formatted correctly, and does not contain appropriate integer values for its class or unique identifier. Please name .pgm files in the format: "classX_#.pgm"
+Error - the class value for the file class-1_-22.pgm should be a positive integer, but was found to be -1
+]]></system-err>
+</testsuite>

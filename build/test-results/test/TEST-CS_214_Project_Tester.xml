@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="CS_214_Project_Tester" tests="10" skipped="0" failures="0" errors="0" timestamp="2024-11-26T04:57:49" hostname="seoul" time="1.351">
+  <properties/>
+  <testcase name="secondArgNonTxtFails()" classname="CS_214_Project_Tester" time="0.035"/>
+  <testcase name="trainingHistogramsByClassCreatedCorrectly()" classname="CS_214_Project_Tester" time="0.574"/>
+  <testcase name="thirdArgNonInt()" classname="CS_214_Project_Tester" time="0.002"/>
+  <testcase name="firstArgNonTxtFails()" classname="CS_214_Project_Tester" time="0.001"/>
+  <testcase name="thirdArgNegative()" classname="CS_214_Project_Tester" time="0.0"/>
+  <testcase name="zeroArgsFail()" classname="CS_214_Project_Tester" time="0.001"/>
+  <testcase name="defaultConstructorDoesNothing()" classname="CS_214_Project_Tester" time="0.001"/>
+  <testcase name="tooFewClassesInTrainingSetFails()" classname="CS_214_Project_Tester" time="0.227"/>
+  <testcase name="validArgsPass()" classname="CS_214_Project_Tester" time="0.508"/>
+  <testcase name="tooManyArgsFail()" classname="CS_214_Project_Tester" time="0.001"/>
+  <system-out><![CDATA[class0_1.pgm class0_7.pgm class0_8.pgm class0_9.pgm
+class0_10.pgm class0_11.pgm class0_12.pgm class0_13.pgm class0_14.pgm class0_15.pgm class0_2.pgm class0_3.pgm class0_4.pgm class0_5.pgm class0_6.pgm
+class0_1.pgm class0_1.pgm class0_3.pgm class0_3.pgm class0_4.pgm class0_4.pgm class0_6.pgm class0_6.pgm class0_7.pgm class0_7.pgm class0_8.pgm class0_8.pgm class0_9.pgm class0_9.pgm
+class0_10.pgm class0_10.pgm class0_11.pgm class0_11.pgm class0_12.pgm class0_12.pgm class0_13.pgm class0_13.pgm class0_14.pgm class0_14.pgm class0_15.pgm class0_15.pgm class0_2.pgm class0_2.pgm class0_5.pgm class0_5.pgm
+]]></system-out>
+  <system-err><![CDATA[Error - the file provided as the depth image set was not of the expected .txt type. Please try again with a text file!
+Error: Error - the third argument should be a positive integer value. Entered value of Two is invalid.
+Error - the file provided for perceptron training was not of the expected .txt type. Please try again with a text file!
+Error: Error - the third argument should be a positive integer value. The entered value of -1 is invalid.
+Error:  No arguments were provided. Please provide the filenames of a training set.txt, a testing set.txt, and the number of desired clusters
+Error - there must be at least 2 unique classes in the training set.
+Error:  invalid number of arguments. Please provide the names for two text files, and the integer number of clusters you would like created.
+]]></system-err>
+</testsuite>

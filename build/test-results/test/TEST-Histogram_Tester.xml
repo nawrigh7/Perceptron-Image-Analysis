@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Histogram_Tester" tests="10" skipped="0" failures="0" errors="0" timestamp="2024-11-26T04:57:50" hostname="seoul" time="0.01">
+  <properties/>
+  <testcase name="verifyDefaultHistFails()" classname="Histogram_Tester" time="0.0"/>
+  <testcase name="verifyConstructorSuccess()" classname="Histogram_Tester" time="0.001"/>
+  <testcase name="verifyHistogramCreation()" classname="Histogram_Tester" time="0.0"/>
+  <testcase name="verifyToString()" classname="Histogram_Tester" time="0.003"/>
+  <testcase name="verifyRangeCounterSuccess()" classname="Histogram_Tester" time="0.0"/>
+  <testcase name="verifyConvertToDoubleSuccess()" classname="Histogram_Tester" time="0.001"/>
+  <testcase name="verifyHashMap()" classname="Histogram_Tester" time="0.004"/>
+  <testcase name="verifyNoFileFailsListCreation()" classname="Histogram_Tester" time="0.001"/>
+  <testcase name="verifyCalculateSums()" classname="Histogram_Tester" time="0.0"/>
+  <testcase name="verifyNormalized()" classname="Histogram_Tester" time="0.0"/>
+  <system-out><![CDATA[0.16666666666666666 0.0 0.0 0.0 0.0 0.16666666666666666 0.0 0.0 0.0 0.0 0.16666666666666666 0.0 0.0 0.0 0.0 0.16666666666666666 0.0 0.0 0.0 0.0 0.16666666666666666 0.0 0.0 0.0 0.0 0.16666666666666666 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+0.16666666666666666 0.0 0.0 0.0 0.0 0.16666666666666666 0.0 0.0 0.0 0.0 0.16666666666666666 0.0 0.0 0.0 0.0 0.16666666666666666 0.0 0.0 0.0 0.0 0.16666666666666666 0.0 0.0 0.0 0.0 0.16666666666666666 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+]]></system-out>
+  <system-err><![CDATA[Error - default constructor not for use
+Error - File not found while creating Histogram
+]]></system-err>
+</testsuite>
