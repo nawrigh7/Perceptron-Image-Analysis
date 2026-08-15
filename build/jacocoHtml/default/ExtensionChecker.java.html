@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExtensionChecker.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pa9-nawrigh7</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">ExtensionChecker.java</span></div><h1>ExtensionChecker.java</h1><pre class="source lang-java linenums">
+/**
+ * &lt;b&gt;Class - ExtensionChecker&lt;/b&gt;
+ * &lt;p&gt;This class is used to check file extensions against a provided expected extension&lt;/p&gt;
+ */
+public class ExtensionChecker {
+
+    /*
+     * Class members
+     */
+    final String expectedExtension;
+
+    /**
+     * &lt;b&gt;Constructor - ExtensionChecker&lt;/b&gt;
+     * &lt;p&gt;Takes a String representing the expected extension to match&lt;/p&gt;
+     * @param expectedExtension Expected extension. If you want to check for .txt files, this would be &quot;.txt&quot;
+     */
+<span class="fc" id="L18">    public ExtensionChecker(String expectedExtension) {</span>
+<span class="fc" id="L19">        this.expectedExtension = expectedExtension;</span>
+<span class="fc" id="L20">    }</span>
+
+    /**
+     * &lt;b&gt;Method - checkExtension&lt;/b&gt;
+     * &lt;p&gt;For ease of use, this takes an entire string, and only checks the last 4 values of the string (i.e., the extension)&lt;/p&gt;
+     * &lt;p&gt;If the string is less than 4 values, it throws an error. Otherwise, it returns false to allow for use in decision statements&lt;/p&gt;
+     * @param extensionToCheck String to check the extension of. This does &lt;b&gt;not&lt;/b&gt; need to be in &quot;.xxx&quot; form - a full filename is acceptable
+     * @return True iff the extension of the supplied String matches what is expected
+     * @throws ExtensionException Thrown if the String supplied is too short to be a valid file type.
+     */
+    public boolean checkExtension(String extensionToCheck) throws ExtensionException {
+        try{
+<span class="fc bfc" id="L32" title="All 2 branches covered.">            if(extensionToCheck.substring(extensionToCheck.length()-4, extensionToCheck.length()).compareTo(expectedExtension) == 0){</span>
+<span class="fc" id="L33">                return true;</span>
+            }else {
+<span class="fc" id="L35">                return false;</span>
+            }
+<span class="fc" id="L37">        }catch(IndexOutOfBoundsException e) {</span>
+<span class="fc" id="L38">            throw new ExtensionException(&quot;Error - the supplied string (&quot; + extensionToCheck + &quot;) is too short to possibly be a valid file.&quot;);</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

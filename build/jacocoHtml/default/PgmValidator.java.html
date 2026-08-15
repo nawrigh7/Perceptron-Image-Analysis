@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PgmValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pa9-nawrigh7</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">PgmValidator.java</span></div><h1>PgmValidator.java</h1><pre class="source lang-java linenums">import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
+
+/**
+ * &lt;b&gt;Class - PgmValidator&lt;/b&gt;
+ * &lt;p&gt;Child class of FileValidator&lt;/p&gt;
+ * &lt;p&gt;This class expands functionality to assess .pgm files to the specifications of the assignment&lt;/p&gt;
+ */
+public class PgmValidator extends FileValidator{
+
+    /*
+     * Class Members
+     */
+<span class="fc" id="L17">    ArrayList&lt;File&gt; imageList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L18">    HashMap&lt;Integer, Integer&gt; classFrequency = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L19">    HashMap&lt;Integer, ArrayList&lt;File&gt;&gt; imagesByClass = new HashMap&lt;&gt;();</span>
+    String fileName;
+    File inputFile;
+    Scanner scan;
+    boolean isValid;
+    boolean listCreated;
+    static final String expectedFormat = &quot;P2&quot;;
+<span class="fc" id="L26">    String imageExtension = &quot;.pgm&quot;;</span>
+<span class="fc" id="L27">    int numOfClasses = 0;</span>
+
+    /**
+     * &lt;b&gt;PgmValidator - Default constructor&lt;/b&gt;
+     * &lt;p&gt;Simply sets isValid to false, does nothing else.&lt;/p&gt;
+     * &lt;p&gt;Requires use of setters to update any values.&lt;/p&gt;
+     */
+<span class="fc" id="L34">    public PgmValidator() {</span>
+<span class="fc" id="L35">        isValid = false;</span>
+<span class="fc" id="L36">    }</span>
+
+    /**
+     * &lt;b&gt;PgmValidator - Constructor&lt;/b&gt;
+     * &lt;p&gt;When created and provided a string that represents a file name, this object will create an ArrayList of File objects.&lt;/p&gt;
+     * &lt;p&gt;These file objects will then be checked for validity for the purposes of this program&lt;/p&gt;
+     * @param fileName A string that represents a .txt file which we will parse through to get our image files
+     * @throws FileNotFoundException if the file is not found
+     * @throws InvalidFileException if a parent class method fails
+     * @throws PgmException if a pgm file is found to be invalid
+     * @throws ExtensionException if a file is found to not be a .pgm file
+     */
+<span class="fc" id="L48">    public PgmValidator(String fileName) throws FileNotFoundException, InvalidFileException, PgmException, ExtensionException {</span>
+<span class="fc" id="L49">        this.fileName = fileName;</span>
+        //Path filePath = FileSystems.getDefault().getPath(fileName);
+        //this.inputFile = filePath.toFile();
+<span class="fc" id="L52">        this.inputFile = new File(this.fileName).getAbsoluteFile();</span>
+<span class="fc" id="L53">    }</span>
+
+    /**
+     * &lt;b&gt;Method - validate&lt;/b&gt;
+     * &lt;p&gt;Executes the rest of the methods to check if the pgm files are valid or not&lt;/p&gt;
+    * @throws ExtensionException Thrown by ExtensionChecker object in createList()
+    * @throws PgmException Thrown in many cases throughout the validity checking process
+    * @throws InvalidFileException Thrown from parent class
+    * @throws FileNotFoundException Potentially thrown by scanner object
+    */
+    public void validate() throws FileNotFoundException, InvalidFileException, PgmException, ExtensionException {
+<span class="pc bpc" id="L64" title="2 of 4 branches missed.">        if(exists(this.inputFile) &amp;&amp; notEmpty(this.inputFile)) {</span>
+<span class="fc" id="L65">            this.listCreated = createList();</span>
+        }
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">        if(listCreated) {</span>
+<span class="fc" id="L68">            isValid = checkImageListContents();</span>
+        }
+<span class="fc" id="L70">        this.numOfClasses = classFrequency.size();</span>
+<span class="fc" id="L71">    }</span>
+
+    /**
+     * &lt;b&gt;Method - createList&lt;/b&gt;
+     * &lt;p&gt;This method fills out our ArrayList of Files from the contents of the .txt file&lt;/p&gt;
+     * @return true iff the list is successfully populated
+     * @throws FileNotFoundException thrown if the file in question is not found
+     * @throws PgmException Potentially thrown if a file in the text file is found to not be a .pgm file, or if the file is too short to be a valid file name
+     * @throws ExtensionException an ExtensionChecker object is created in this method
+     */
+    private boolean createList() throws FileNotFoundException, PgmException, ExtensionException {
+<span class="fc" id="L82">        scan = new Scanner(this.inputFile);</span>
+<span class="fc" id="L83">        ExtensionChecker pgmChecker = new ExtensionChecker(imageExtension);</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        while(scan.hasNextLine()) {</span>
+<span class="fc" id="L85">            String lineFromFile = scan.nextLine().trim();</span>
+            //Path filePath = FileSystems.getDefault().getPath(lineFromFile);
+<span class="fc bfc" id="L87" title="All 2 branches covered.">            if(lineFromFile.length() == 0) {</span>
+<span class="fc" id="L88">                continue;</span>
+            }
+            try{
+<span class="fc bfc" id="L91" title="All 2 branches covered.">                if(pgmChecker.checkExtension(lineFromFile)){</span>
+                    //File outerFilePath = new File(inputFile.getParent());
+                    //this.imageList.add(new File(outerFilePath.getParent() + &quot;/&quot; + lineFromFile).getAbsoluteFile());
+<span class="fc" id="L94">                    this.imageList.add(new File(lineFromFile).getAbsoluteFile());</span>
+                    //this.imageList.add(filePath.toFile());
+                }else {
+<span class="fc" id="L97">                    scan.close();</span>
+<span class="fc" id="L98">                    throw new PgmException(&quot;Error - the filename &quot; + lineFromFile + &quot; is not a .pgm file. Please supply a text file containing only images of the file type .pgm&quot;);</span>
+                }
+<span class="nc" id="L100">            } catch(IndexOutOfBoundsException e) {</span>
+<span class="nc" id="L101">                scan.close();</span>
+<span class="nc" id="L102">                throw new PgmException(&quot;Error - the file name &quot; + lineFromFile + &quot; is not long enough to be a valid .pgm image file&quot;);</span>
+<span class="fc" id="L103">            }</span>
+<span class="fc" id="L104">        }</span>
+<span class="fc" id="L105">        scan.close();</span>
+<span class="fc" id="L106">        return true;</span>
+    }
+
+    /**
+     * &lt;b&gt;method - checkImageListContents&lt;/b&gt;
+     * &lt;p&gt;This is a flow control method - this will call all of the validation methods for our image files on each file&lt;/p&gt;
+     * @return true iff all files contained in the .txt are valid pgm files. Validity is explained at each of the &quot;check&quot; methods
+     * @throws PgmException potentially thrown from each &quot;check&quot; method
+     * @throws FileNotFoundException 
+     * @throws InvalidFileException 
+     */
+    private boolean checkImageListContents() throws PgmException, FileNotFoundException, InvalidFileException {
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        for(File image : imageList) {</span>
+<span class="pc bpc" id="L119" title="2 of 4 branches missed.">            if(exists(image) &amp;&amp; notEmpty(image)) {</span>
+<span class="fc" id="L120">                checkName(image);</span>
+<span class="fc" id="L121">                checkFormat(image);</span>
+<span class="fc" id="L122">                checkOnlyContainsInts(image);</span>
+<span class="fc" id="L123">                checkDims(image);</span>
+            }
+<span class="fc" id="L125">        }</span>
+<span class="fc" id="L126">        return true;</span>
+    }
+
+    @Override
+    protected boolean exists(File image) throws InvalidFileException, FileNotFoundException {
+<span class="fc" id="L131">        return super.exists(image);</span>
+    }
+    @Override
+    protected boolean notEmpty(File image) throws InvalidFileException, FileNotFoundException {
+<span class="fc" id="L135">        return super.notEmpty(image);</span>
+    }
+    /**
+     * &lt;b&gt;Method - checkName&lt;/b&gt;
+     * &lt;p&gt;A Valid image file has a particular naming convention: &quot;classX_#.pgm&quot;,&lt;/p&gt;
+     * &lt;p&gt;where X is an integer that determines what class the image belongs to&lt;/p&gt;
+     * &lt;p&gt;and # is an integer that allows for creating unique file names&lt;/p&gt;
+     * @param image File to check for validity
+     * @throws PgmException thrown if the file is found to be invalid in name, format, or content
+     */
+    private void checkName(File image) throws PgmException {
+<span class="fc" id="L146">        String imageName = image.getName();</span>
+<span class="fc" id="L147">        String expectedName = &quot;class&quot;;</span>
+<span class="fc" id="L148">        final int minimum_length_without_extension = 8;</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">        if(imageName.length()-4 &lt; minimum_length_without_extension){</span>
+<span class="nc" id="L150">            throw new PgmException(&quot;Error - the file name &quot; + imageName + &quot; is not named appropriately (the name is too short). Please name .pgm files in the format: \&quot;classX_#.pgm\&quot;&quot;);</span>
+        }
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        if(!imageName.substring(0,5).equals(expectedName)){</span>
+<span class="nc" id="L153">            throw new PgmException(&quot;Error - the file name &quot; + imageName + &quot; is not formatted correctly - it should begin with \&quot;class\&quot;. Please name .pgm files in the format: \&quot;classX_#.pgm\&quot;&quot;);</span>
+        }
+<span class="fc" id="L155">        String classRemoved = imageName.substring(5);</span>
+<span class="fc" id="L156">        String classAndExtensionRemoved = classRemoved.substring(0,classRemoved.length()-4);</span>
+<span class="fc" id="L157">        String[] classAndUniqueValues = classAndExtensionRemoved.split(&quot;_&quot;);</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">        if(classAndUniqueValues.length != 2) {</span>
+<span class="nc" id="L159">            throw new PgmException(&quot;Error - the file name &quot; + imageName + &quot; is not formatted correctly, and either has too many or too few underscores. Please name .pgm files in the format: \&quot;classX_#.pgm\&quot;&quot;);</span>
+        }
+<span class="fc" id="L161">        verifyIntsInName(classAndUniqueValues, image);</span>
+<span class="fc" id="L162">    }</span>
+
+    /**
+     * &lt;b&gt;Method - verifyIntsInName&lt;/b&gt;
+     * &lt;p&gt;This method verifies that the values that should be integers (X and # out of the format classX_#.pgm)&lt;/p&gt;
+     * &lt;p&gt;are, and are within the range (generally speaking, &gt;0)&lt;/p&gt;
+     * @param classAndUniqueValues An array of Strings which should correspond to two the two numbers in a correctly formatted filename
+     * @param imageName The name of the file being processed. Used for error reporting
+     * @throws PgmException Thrown if either value in classAndUniqueValues is not an integer greater than 0.
+     */
+    private void verifyIntsInName(String[] classAndUniqueValues, File image) throws PgmException {
+        try{
+<span class="fc" id="L174">            int classValue = Integer.parseInt(classAndUniqueValues[0]);</span>
+<span class="fc" id="L175">            int uniqueValue = Integer.parseInt(classAndUniqueValues[1]);</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">            if(classValue &lt; 0) {</span>
+<span class="fc" id="L177">                throw new PgmException(&quot;Error - the class value for the file &quot; + image.getName() + &quot; should be a positive integer, but was found to be &quot; + classValue);</span>
+            }
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">            if(uniqueValue &lt; 0) {</span>
+<span class="nc" id="L180">                throw new PgmException(&quot;Error - the unique file identifier value for the file &quot; + image.getName() + &quot; should be a positive integer, but was found to be &quot; + uniqueValue);</span>
+            }
+<span class="fc bfc" id="L182" title="All 2 branches covered.">            if(classFrequency.containsKey(classValue)){</span>
+<span class="fc" id="L183">                classFrequency.put(classValue, classFrequency.get(classValue)+1);</span>
+            }else{
+<span class="fc" id="L185">                classFrequency.put(classValue, 1);</span>
+            }
+<span class="fc bfc" id="L187" title="All 2 branches covered.">            if(imagesByClass.containsKey(classValue)) {</span>
+<span class="fc" id="L188">                imagesByClass.get(classValue).add(image);</span>
+            }else {
+<span class="fc" id="L190">                imagesByClass.put(classValue, new ArrayList&lt;File&gt;());</span>
+<span class="fc" id="L191">                imagesByClass.get(classValue).add(image);</span>
+            }
+<span class="fc" id="L193">        } catch(NumberFormatException e) {</span>
+<span class="fc" id="L194">            throw new PgmException(&quot;Error - the file name &quot; + image.getName() + &quot; is not formatted correctly, and does not contain appropriate integer values for its class or unique identifier. Please name .pgm files in the format: \&quot;classX_#.pgm\&quot;&quot;);</span>
+<span class="fc" id="L195">        }</span>
+<span class="fc" id="L196">    }</span>
+
+    /**
+     * &lt;b&gt;Method - checkFormat&lt;/b&gt;
+     * &lt;p&gt;This method checks that the format value (the first value in the file) is P2, as expected&lt;/p&gt;
+     * @param image The image file to check
+     * @throws PgmException thrown if the value is not P2
+     * @throws FileNotFoundException potentially thrown by scanner object
+     */
+    private void checkFormat(File image) throws PgmException, FileNotFoundException{
+<span class="fc" id="L206">        scan = new Scanner(image);</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">        if(!scan.next().equals(expectedFormat)){</span>
+<span class="fc" id="L208">            scan.close();</span>
+<span class="fc" id="L209">            throw new PgmException(&quot;Error - the expected format value of P2 was not found in file: &quot; + image.getName());</span>
+        }
+<span class="fc" id="L211">    }</span>
+
+    /**
+     * &lt;b&gt;Method - checkOnlyContainsInts&lt;/b&gt;
+     * &lt;p&gt;This method checks a .pgm file and verifies that after its &quot;P2&quot; Header value, it only contains integer values from 0-255&lt;/p&gt;
+     * @param image The file to check
+     * @throws FileNotFoundException Thrown if the file does not exist.
+     * @throws PgmException Thrown if a non-integer value is found, or a value outside of the 0-255 acceptable range is found.
+     */
+    private void checkOnlyContainsInts(File image) throws FileNotFoundException, PgmException {
+<span class="fc" id="L221">        scan = new Scanner(image);</span>
+<span class="fc" id="L222">        scan.next();</span>
+        int x;
+<span class="fc bfc" id="L224" title="All 2 branches covered.">        while(scan.hasNext()) {</span>
+            try{
+<span class="fc" id="L226">                x = Integer.parseInt(scan.next());</span>
+<span class="pc bpc" id="L227" title="1 of 4 branches missed.">                if(x &lt; 0 || x &gt; 255) {</span>
+<span class="fc" id="L228">                    scan.close();</span>
+<span class="fc" id="L229">                    throw new PgmException(&quot;Error - an integer value is outside of the 0-255 range in &quot; + image.getName());</span>
+                }
+<span class="fc" id="L231">            } catch (NumberFormatException e) {</span>
+<span class="fc" id="L232">                scan.close();</span>
+<span class="fc" id="L233">                throw new PgmException(&quot;Error - the file&quot; + image.getName() + &quot; contains a non-integer value&quot;);</span>
+<span class="fc" id="L234">            }</span>
+        }
+<span class="fc" id="L236">        scan.close();</span>
+<span class="fc" id="L237">    }</span>
+
+    /**
+     * &lt;b&gt;Method - checkDims&lt;/b&gt;
+     * &lt;p&gt;This method checks all of the values after the &quot;P2&quot; header value&lt;/p&gt;
+     * &lt;p&gt;The second value should be the width: an integer from 0-255&lt;/p&gt;
+     * &lt;p&gt;The third value should be the height: an integer from 0-255&lt;/p&gt;
+     * &lt;p&gt;The third value should be the maximum pixel value: an integer from 0-255 (in our case, this will be 255)&lt;/p&gt;
+     * &lt;p&gt;This method also checks that the number of entries after this header section is equal to width x height&lt;/p&gt;
+     * @param image The file to check
+     * @throws FileNotFoundException potentially thrown by Scanner object
+     * @throws PgmException Thrown if a value is outside of the correct range, or otherwise unacceptable
+     */
+    private void checkDims(File image) throws FileNotFoundException, PgmException {
+<span class="fc" id="L251">        scan = new Scanner(image);</span>
+<span class="fc" id="L252">        scan.next();</span>
+<span class="fc" id="L253">        int width = scan.nextInt();</span>
+<span class="pc bpc" id="L254" title="2 of 4 branches missed.">        if(width &lt; 0 || width &gt; 255) {</span>
+<span class="nc" id="L255">            throw new PgmException(&quot;Error - the width in the file &quot; + image.getName() + &quot; of &quot; + width + &quot; is not within the 0-255 range.&quot;);</span>
+        }
+<span class="fc" id="L257">        int height = scan.nextInt();</span>
+<span class="pc bpc" id="L258" title="2 of 4 branches missed.">        if(height &lt; 0 || height &gt; 255) {</span>
+<span class="nc" id="L259">            throw new PgmException(&quot;Error - the height in the file &quot; + image.getName() + &quot; of &quot; + height + &quot; is not within the 0-255 range.&quot;);</span>
+        }
+<span class="fc" id="L261">        int dimensions = width * height;</span>
+<span class="fc" id="L262">        int pixel = scan.nextInt();</span>
+<span class="pc bpc" id="L263" title="2 of 4 branches missed.">        if(pixel &lt; 0 || pixel &gt; 255) {</span>
+<span class="nc" id="L264">            throw new PgmException(&quot;Error - the Pixel value in the file &quot; + image.getName() + &quot; of &quot; + pixel + &quot; is not within the 0-255 range.&quot;);</span>
+        }
+<span class="fc" id="L266">        int count = 0;</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">        while(scan.hasNext()) {</span>
+<span class="fc" id="L268">            scan.next();</span>
+<span class="fc" id="L269">            count++;</span>
+        }
+<span class="fc bfc" id="L271" title="All 2 branches covered.">        if(count != dimensions) {</span>
+<span class="fc" id="L272">            throw new PgmException(&quot;Error - the file &quot; + image.getName() + &quot; does not have the expected dimensions of &quot; + dimensions);</span>
+        }
+<span class="fc" id="L274">    }</span>
+
+    /**
+     * &lt;b&gt;Getter Method - getClass&lt;/b&gt;
+     * &lt;p&gt;This method gets the &quot;class&quot; indicator from the name of a file and returns it&lt;/p&gt;
+     * @param image the file to extract the class from
+     * @return class of the given file
+     */
+    public Integer getClass(File image) {
+<span class="nc" id="L283">        String classValue = image.getName();</span>
+<span class="nc" id="L284">        classValue = classValue.substring(5, classValue.length()-4);</span>
+<span class="nc" id="L285">        String[] numbersInClassValue = classValue.split(&quot;_&quot;);</span>
+<span class="nc" id="L286">        return Integer.parseInt(numbersInClassValue[0]);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

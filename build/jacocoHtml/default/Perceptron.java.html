@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Perceptron.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pa9-nawrigh7</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Perceptron.java</span></div><h1>Perceptron.java</h1><pre class="source lang-java linenums">import java.util.ArrayList;
+import java.util.HashMap;
+
+
+/**
+ * &lt;b&gt;Class - Perceptron&lt;/b&gt;
+ * &lt;p&gt;The perceptron class is the implementation of a perceptron for basic machine learning&lt;/p&gt;
+ * &lt;p&gt;The perceptron implements the following equation:&lt;/p&gt;
+ * &lt;p&gt; y = b + Σ(i=0-&gt;63) w(i) * h(i)&lt;/p&gt;
+ * &lt;p&gt;The y value in this equation is the perceptron value&lt;/p&gt;
+ * &lt;p&gt;The b value is our bias - in this case, it will be 1 if the image is in the class of interest, and -1 otherwise&lt;/p&gt;
+ * &lt;p&gt;The w value is the weight of a value being evaluated, and is updated with each epoch&lt;/p&gt;
+ * &lt;p&gt;The h value is the % of an image contained in a single histogram bin (i.e., the # in the bin / total number of entries in the image file). This is equivalent to the value in the normalized histogram calculated in the Histogram object&lt;/p&gt;
+ */
+public class Perceptron {
+
+    /*
+     * Class Members
+     */
+
+    double bias, perceptronValue;
+    int imageClass;
+<span class="fc" id="L23">    final int HISTOGRAM_LENGTH = 64;</span>
+<span class="fc" id="L24">    HashMap&lt;Integer, Double&gt; weightMap = new HashMap&lt;&gt;(); // This map corresponds to the &quot;w&quot; value in the equation. There will be 64 values in this.</span>
+<span class="fc" id="L25">    ArrayList&lt;Histogram&gt; histList = new ArrayList&lt;&gt;();</span>
+    //double[] weights = new double[HISTOGRAM_LENGTH];
+
+    /**
+     * &lt;b&gt;Constructor - Perceptron default&lt;/b&gt;
+     * &lt;p&gt;The default constructor simply initializes all values to 0, where possible&lt;/p&gt;
+     * &lt;p&gt;The image class value is initialized to -1, as this is not a valid class and we do not want to confuse this object with a ready-to-use Perceptron&lt;/p&gt;
+     */
+<span class="fc" id="L33">    public Perceptron() {</span>
+<span class="fc" id="L34">        this.bias = 0;</span>
+<span class="fc" id="L35">        this.perceptronValue = 0;</span>
+<span class="fc" id="L36">        this.imageClass = -1;</span>
+<span class="fc" id="L37">        fillWeightMap();</span>
+<span class="fc" id="L38">    }</span>
+
+    /**
+     * &lt;b&gt;Constructor - Perceptron(ArrayList, int)&lt;/b&gt;
+     * &lt;p&gt;This constructor takes in an arrayList of Histogram objects and an integer&lt;/p&gt;
+     * &lt;p&gt;The integer should be the desired class of image to process, as entered on the command line at runtime&lt;/p&gt;
+     * &lt;p&gt;The class of an image should be embedded in the file name: classX_#.pgm, where X is the class&lt;/p&gt;
+     * @param histList List of histogram objects created from the supplied file
+     * @param imageClass class of image to process, as indicated from command line.
+     */
+<span class="fc" id="L48">    public Perceptron(ArrayList&lt;Histogram&gt; histList, int imageClass) {</span>
+<span class="fc" id="L49">        this.perceptronValue = 0;</span>
+<span class="fc" id="L50">        this.bias = 0;</span>
+<span class="fc" id="L51">        this.imageClass = imageClass;</span>
+<span class="fc" id="L52">        this.histList = histList;</span>
+<span class="fc" id="L53">        fillWeightMap();</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        for(Histogram h : this.histList) {</span>
+<span class="fc" id="L55">            calculatePerceptronValue(h);</span>
+<span class="fc" id="L56">        }</span>
+<span class="fc" id="L57">    }</span>
+
+    /**
+     * &lt;b&gt;Method - fillWeightMap&lt;/b&gt;
+     * &lt;p&gt;This method fills the weightMap with keys from 0-63 and values of 0.0 in all places. This is only used upon object creation (by constructors)&lt;/p&gt;
+     */
+    private void fillWeightMap() {
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        for(int i=0; i&lt;HISTOGRAM_LENGTH; i++) {</span>
+<span class="fc" id="L65">            this.weightMap.put(i, 0.0);</span>
+            //this.weights[i] = 0.0;
+        }
+<span class="fc" id="L68">    }</span>
+
+    /**
+     * &lt;b&gt;Method - epoch&lt;/b&gt;
+     * &lt;p&gt;This method executes the primary formula of the Perceptron: y = b + Σ(i=0-&gt;63) w(i) * h(i)&lt;/p&gt;
+     * &lt;p&gt;The variable perceptronValue equates to y in the equation, and bias equates to b.&lt;/p&gt;
+     * &lt;p&gt;The following sum is executed in the weightTimesHistogram method&lt;/p&gt;
+     */
+    public void epoch() {
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        for(Histogram h : this.histList) {</span>
+<span class="fc" id="L78">            calculatePerceptronValue(h);</span>
+<span class="fc" id="L79">            updateWeight(h);</span>
+<span class="fc" id="L80">        }</span>
+<span class="fc" id="L81">    }</span>
+
+    /**
+     * &lt;b&gt;Method - epoch(int)&lt;/b&gt;
+     * &lt;p&gt;This method is an override of epoch that takes in an integer parameter, and calls the epoch-noargs method for &quot;iterations&quot; number of times&lt;/p&gt;
+     * @param iterations number of epochs to complete
+     */
+    public void epoch(int iterations) {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        for(int i=0; i&lt;iterations; i++) {</span>
+<span class="fc" id="L90">            epoch();</span>
+        }
+<span class="fc" id="L92">    }</span>
+
+    /**
+     * &lt;b&gt;Method - calculatePerceptronValue()&lt;/b&gt;
+     * &lt;p&gt;calculates the perceptron value, or the &quot;y,&quot; from the formula using the provided list of Histogram objects&lt;/p&gt;
+     */
+    private void calculatePerceptronValue(Histogram h) {
+<span class="fc" id="L99">        this.perceptronValue = this.bias + weightTimesHistogram(h);</span>
+<span class="fc" id="L100">    }</span>
+    
+    /**
+     * &lt;b&gt;Method - weightTimesHistogram&lt;/b&gt;
+     * &lt;p&gt;This method executes the sum of the Perceptron formula: y = b + Σ(i=0-&gt;63) w(i) * h(i)&lt;/p&gt;
+     * &lt;p&gt;Variable definitions:&lt;/p&gt;
+     * &lt;ul&gt;
+     *      &lt;li&gt;w(i) = weight at given index (i)&lt;/li&gt;
+     *      &lt;li&gt;h(i) = normalized histogram value at index (i)&lt;/li&gt;
+     * &lt;/ul&gt;
+     * @param hist histogram to gather hist values from
+     * @return the sum of the products of each indexed weight * normalized histogram value, taken from the weightMap and histMap, respectively.
+     */
+    private double weightTimesHistogram(Histogram hist) {
+<span class="fc" id="L114">        double sum = 0;</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        for(int i=0; i&lt;HISTOGRAM_LENGTH; i++) {</span>
+<span class="fc" id="L116">            sum += weightMap.get(i) * hist.histMap.get(i);</span>
+            //sum += weights[i] * hist.normalized[i];
+        }
+<span class="fc" id="L119">        return sum;</span>
+    }
+
+/**
+     * &lt;b&gt;Method - updateWeight&lt;/b&gt;
+     * &lt;p&gt;This method updates the weightMap according to the equation: w(i) &lt;- w(i) + (d - y)*h(i)&lt;/p&gt;
+     * &lt;ul&gt;
+     *      &lt;li&gt;w(i) = weight at index (i)&lt;/li&gt;
+     *      &lt;li&gt;d = class association. this is 1 if the image is from the target class, and -1 if not&lt;/li&gt;
+     *      &lt;li&gt;y = perceptronValue&lt;/li&gt;
+     *      &lt;li&gt;h(i) = value of the normalized histogram at index (i)&lt;/li&gt;
+     * &lt;/ul&gt;
+     * @param trainingSample Histogram to take values from for udpate
+     * @param d class association as calculated in updateBias
+     */
+        private void updateWeight(Histogram trainingSample) {
+<span class="fc" id="L135">        int d = 0; // This is only needed if using specific image-class matching (as in pa8) If using this matching, un-comment the if/else just below as well.</span>
+        //int d = 1;
+<span class="fc bfc" id="L137" title="All 2 branches covered.">            if(Integer.parseInt(trainingSample.imageClass) == this.imageClass) {</span>
+<span class="fc" id="L138">                d = 1;</span>
+            }else {
+<span class="fc" id="L140">                d = -1;</span>
+            }
+<span class="fc bfc" id="L142" title="All 2 branches covered.">            for(int i=0; i&lt;HISTOGRAM_LENGTH; i++) {</span>
+<span class="fc" id="L143">                double mapUpdate = this.weightMap.remove(i) + (d - this.perceptronValue) * trainingSample.histMap.get(i);</span>
+<span class="fc" id="L144">                this.weightMap.put(i, mapUpdate);</span>
+                //double arrUpdate = this.weights[i] + ((d - this.perceptronValue) * trainingSample.normalized[i]);
+                //weights[i] = arrUpdate;
+            }
+<span class="fc" id="L148">            updateBias(trainingSample, d);</span>
+            
+<span class="fc" id="L150">        }</span>
+
+    /**
+     * &lt;b&gt;Method - updateBias&lt;/b&gt;
+     * &lt;p&gt;This method updates the bias of our perceptron as outlined in the equation: b &lt;- b + (d - y)&lt;/p&gt;
+     * &lt;p&gt;Variable Definitions:&lt;/p&gt;
+     * &lt;ul&gt;
+     *      &lt;li&gt;b = bias&lt;/li&gt;
+     *      &lt;li&gt;d = class association. this is 1 if the image is from the target class, and -1 if not&lt;/li&gt;
+     *      &lt;li&gt;y = perceptronValue&lt;/li&gt;
+     * &lt;/ul&gt;
+     * @param trainingSample Histogram object used to update the bias value
+     */
+    private void updateBias(Histogram trainingSample, int d) {
+<span class="fc" id="L164">        this.bias += (d - this.perceptronValue);</span>
+<span class="fc" id="L165">    }</span>
+
+    /**
+     * &lt;b&gt;Method - toString&lt;/b&gt;
+     * &lt;p&gt;Used for easy printing of Perceptron objects, as outlined in pa8&lt;/p&gt;
+     */
+    @Override
+    public String toString() {
+<span class="fc" id="L173">        String printable = &quot;&quot;;</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">        for(int i=0; i&lt;HISTOGRAM_LENGTH; i++) {</span>
+<span class="fc" id="L175">            printable = printable + String.format(&quot;%.6f &quot;, this.weightMap.get(i)) /*this.weights[i])*/;</span>
+        }
+<span class="fc" id="L177">        printable = printable + String.format(&quot;%.6f&quot;, this.bias);</span>
+<span class="fc" id="L178">        return printable.trim();</span>
+    }
+
+    /**
+     * &lt;b&gt;Setter - imageClass&lt;/b&gt;
+     * &lt;p&gt;Sets the class member imageClass to the input value&lt;/p&gt;
+     * @param imageClass image class to set the class member to
+     */
+    public void setImageClass(int imageClass) {
+<span class="fc" id="L187">        this.imageClass = imageClass;</span>
+<span class="fc" id="L188">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

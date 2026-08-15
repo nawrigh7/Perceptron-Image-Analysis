@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Comparitor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pa9-nawrigh7</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Comparitor.java</span></div><h1>Comparitor.java</h1><pre class="source lang-java linenums">/**
+ * &lt;b&gt;Class - Comparitor&lt;/b&gt;
+ * &lt;p&gt;This class compares normalized histograms, which can be done multiple ways.&lt;/p&gt;
+ * &lt;p&gt;The value 2 is used as an elimination-from-consideration case.&lt;/p&gt;
+ */
+public class Comparitor{
+
+    /*
+     * Class Members
+     */
+    static final int MAXIMUM_LENGTH = 64;
+    /*ArrayList&lt;double[]&gt; histList = new ArrayList&lt;&gt;();
+    ArrayList&lt;double[]&gt; normHistList = new ArrayList&lt;&gt;();
+    ArrayList&lt;double[]&gt; comparisons = new ArrayList&lt;&gt;();*/
+<span class="fc" id="L15">    double[] normOne = new double[MAXIMUM_LENGTH];</span>
+<span class="fc" id="L16">    double[] normTwo = new double[MAXIMUM_LENGTH];</span>
+<span class="fc" id="L17">    double similarity = 2.0;</span>
+
+
+    /**
+     * &lt;b&gt;Constructor - Comparitor default&lt;/b&gt;
+     * &lt;p&gt;This currently does not do anything. &lt;/p&gt;
+     */
+<span class="fc" id="L24">    public Comparitor(){</span>
+
+<span class="fc" id="L26">    }</span>
+
+    /**
+     * &lt;b&gt;Constructor - Comparitor&lt;/b&gt;
+     * &lt;p&gt;This creates a comparitor object, which uses two normalized histograms to evaluate their similarity with a bin-to-bin comparison.&lt;/p&gt;
+     * &lt;p&gt;This similarity will be a value between 0 and 1, where 1 is the same, and 0 is completely different.&lt;/p&gt;
+     * @param histOne The normalized histogram that corresponds to the first file
+     * @param histTwo The normalized histogram that corresponds to the second file
+     */
+<span class="fc" id="L35">    public Comparitor(double[] histOne, double[] histTwo) {</span>
+<span class="fc" id="L36">        this.normOne = histOne;</span>
+<span class="fc" id="L37">        this.normTwo = histTwo;</span>
+<span class="fc" id="L38">        this.similarity = compare(normOne, normTwo);</span>
+<span class="fc" id="L39">    }</span>
+
+    /**
+     * &lt;b&gt;Constructor - Comparitor&lt;/b&gt;
+     * &lt;p&gt;This uses a Perceptron similarity measure, implementing the function sim(i,j) = Σ(n=1-&gt;N) (1 / (y_n,i - y_n,j)²)&lt;/p&gt;
+     * &lt;p&gt;Put plainly, let i = one image, and j = another image, and have number of trained perceptrons N.&lt;/p&gt;
+     * &lt;p&gt;The similarity between i and j equals the sum of (1 / ((i run through perceptron n) - (j run through perceptron n)²) for all perceptrons n&lt;/p&gt;
+     * &lt;p&gt;This creates a comparitor object which can compare two clusters, rather than individual histograms&lt;/p&gt;
+     * @param clusterOne First Cluster to be compared
+     * @param clusterTwo Second Cluster to be compared
+     */
+<span class="fc" id="L50">    public Comparitor(Cluster clusterOne, Cluster clusterTwo) {</span>
+<span class="fc" id="L51">        this.similarity = (getSimilarityMeasures(clusterOne, clusterTwo));</span>
+<span class="fc" id="L52">    }</span>
+
+    /**
+     * &lt;b&gt;Method - getSimilarityMeasures&lt;/b&gt;
+     * &lt;p&gt;This method finds the similarity measure between the two images&lt;/p&gt;
+     * &lt;p&gt;It does so image by image, storing the result in double arrays.&lt;/p&gt;
+     * @param clusterOne image 1, i
+     * @param clusterTwo image 2, j
+     * @return similarity value between image 1 (i) and 2 (j) based on the equation sim(i,j) = Σ(n=1-&gt;N) (1 / (y_n,i - y_n,j)²)
+     */
+    private double getSimilarityMeasures(Cluster clusterOne, Cluster clusterTwo) {
+<span class="fc" id="L63">        double[] y_ni = new double[clusterOne.clusterPerceptronList.size()];</span>
+<span class="fc" id="L64">        double[] y_nj = new double[clusterTwo.clusterPerceptronList.size()];</span>
+<span class="fc" id="L65">        double similarity = 0;</span>
+        // implement function: sim(i,j) = Σ(n=1-&gt;N) (1 / (y_n,i - y_n,j)²)
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        for(int i=0; i&lt;y_ni.length; i++) {</span>
+<span class="fc" id="L68">            y_ni[i] = multiplyWeights(clusterOne.clusterHistogram, clusterOne.clusterPerceptronList.get(i));</span>
+<span class="fc" id="L69">            y_nj[i] = multiplyWeights(clusterTwo.clusterHistogram, clusterTwo.clusterPerceptronList.get(i));</span>
+<span class="fc" id="L70">            similarity += 1/(Math.pow((y_ni[i] - y_nj[i]), 2));</span>
+        }
+<span class="fc" id="L72">        return similarity;</span>
+    }
+
+    /**
+     * &lt;b&gt;Method - multiplyWeights&lt;/b&gt;
+     * &lt;p&gt;This method finds the similarity measure to the given perceptron, using the same function that the perceptrons are trained with:&lt;/p&gt;
+     * &lt;p&gt;y = b + Σ(i=0-&gt;63) w(i) * h(i)&lt;/p&gt;
+     * &lt;p&gt;In this, y is the resultant similarity measure, b is the perceptron's bias, then adding the sum of the corresponding perceptron weights * value in the normalized histogram bin&lt;/p&gt;
+     * @param clusterHistogram The normalized histogram that represents the averages of all histograms in the cluster
+     * @param perceptron Given trained perceptron to compare to the cluster
+     * @return the result of the afforementioned formula
+     */
+    private double multiplyWeights(double[] clusterHistogram, Perceptron perceptron) {
+<span class="fc" id="L85">        double result = perceptron.bias;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        for(int i=0; i&lt;clusterHistogram.length; i++) {</span>
+<span class="fc" id="L87">            result += (perceptron.weightMap.get(i) * clusterHistogram[i]);</span>
+        }
+<span class="fc" id="L89">        return result;</span>
+    }
+
+    /**
+     * &lt;b&gt;Method - compare()&lt;/b&gt;
+     * &lt;p&gt;This method takes in two arrays that represent normalized histograms, and computes the sum of the pair-wise minimums of each bin in the histograms&lt;/p&gt;
+     * &lt;p&gt;This value should be between 0 and 1, with the closer it gets to 1 being more similar&lt;/p&gt;
+     * @param histOne The first histogram to compare
+     * @param histTwo The second histogram to compare
+     * @return The comparison / similarity value
+     */
+    public static double compare(double[] histOne, double[] histTwo) {
+<span class="fc" id="L101">        double sum = 0;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        for(int i=0; i&lt;histOne.length; i++) {</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">            if(histOne[i] &lt;= histTwo[i]) {</span>
+<span class="fc" id="L104">                sum += histOne[i];</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">            }else if (histTwo[i] &lt; histOne[i]){</span>
+<span class="fc" id="L106">                sum += histTwo[i];</span>
+            }
+        }
+<span class="fc" id="L109">        return sum;</span>
+    }
+    
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

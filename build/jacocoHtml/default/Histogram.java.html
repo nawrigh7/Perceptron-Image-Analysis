@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Histogram.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pa9-nawrigh7</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Histogram.java</span></div><h1>Histogram.java</h1><pre class="source lang-java linenums">import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
+
+/**
+ * &lt;b&gt;Class - Histogram&lt;/b&gt;
+ * &lt;p&gt;This class creates a histogram from a File object&lt;/p&gt;
+ * &lt;p&gt;It will create both an integer Histogram, which can easily be printed, and a double Histogram for normalization&lt;/p&gt;
+ * &lt;p&gt;It will then normalize the histogram, following this normalization process:&lt;/p&gt;
+ * &lt;ul&gt;
+ *  &lt;li&gt;Sum all of the bins in a histogram&lt;/li&gt;
+ *  &lt;li&gt;Divide each bin by this resulting sum&lt;/li&gt;
+ * &lt;/ul&gt;
+ */
+public class Histogram {
+
+    /*
+     * Class Members
+     */
+    static final int HISTOGRAM_LENGTH = 64;
+    File inputFile;
+    String fileName;
+    String imageClass; // This value is only used for pa7+ functionality, and should be parsed to an int in that functionality.
+<span class="fc" id="L26">    ArrayList&lt;Integer&gt; valueList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L27">    int[] histogram = new int[HISTOGRAM_LENGTH];</span>
+<span class="fc" id="L28">    double[] dblHist = new double[HISTOGRAM_LENGTH];</span>
+<span class="fc" id="L29">    double sum = 0.0;</span>
+<span class="fc" id="L30">    double[] normalized = new double[HISTOGRAM_LENGTH];</span>
+<span class="fc" id="L31">    HashMap&lt;Integer, Double&gt; histMap = new HashMap&lt;&gt;();</span>
+
+    /**
+     * &lt;b&gt;Constructor - Histogram Default&lt;/b&gt;
+     * &lt;p&gt;Not for use, as such it only throws an exception (for testing purposes, it is not private)&lt;/p&gt;
+     * 
+     * @throws InvalidHistogramException throws exception upon use, as it should never be called.
+     */
+<span class="fc" id="L39">    public Histogram() throws InvalidHistogramException {</span>
+<span class="fc" id="L40">        throw new InvalidHistogramException(&quot;Error - default constructor not for use&quot;);</span>
+    }
+
+    /**
+     * &lt;b&gt;Constructor - Histogram&lt;/b&gt;
+     * &lt;p&gt;This constructor takes in a file, and creates a histogram from it&lt;/p&gt;
+     * &lt;p&gt;The resulting histogram represents how many times a given number in a 4-count range occurs (for example, a number between 0-3, or 4-7, etc.) in the range from 0-255&lt;/p&gt;
+     * @param inputFile The file to create a histogram from
+     * @throws InvalidHistogramException Should not necessarily be thrown - only thrown if file is not found, which should have already been validated by FileValidator
+     */
+<span class="fc" id="L50">    public Histogram(File inputFile) throws InvalidHistogramException{</span>
+<span class="fc" id="L51">        this.inputFile = inputFile;</span>
+<span class="fc" id="L52">        this.fileName = inputFile.getName();</span>
+<span class="fc" id="L53">        this.imageClass = this.fileName.substring(5,6);</span>
+<span class="fc" id="L54">        this.valueList = createListFromFile(this.inputFile);</span>
+<span class="fc" id="L55">        this.histogram = rangeCounter(valueList);</span>
+<span class="fc" id="L56">        this.dblHist = convertToDouble(histogram);</span>
+<span class="fc" id="L57">        this.sum = getSum(dblHist);</span>
+<span class="fc" id="L58">        this.normalized = normalize(dblHist, sum);</span>
+<span class="fc" id="L59">        createMapFromList();</span>
+<span class="fc" id="L60">    }</span>
+
+    /**
+     * &lt;b&gt;Method - createListFromFile&lt;/b&gt;
+     * &lt;p&gt;This method creates an ArrayList of Integers from a .pgm file&lt;/p&gt;
+     * @param fileToCheck file to check
+     * @return ArrayList of Integers
+     * @throws InvalidHistogramException throws if the file is not found
+     */
+    public static ArrayList&lt;Integer&gt; createListFromFile(File fileToCheck) throws InvalidHistogramException{
+<span class="fc" id="L70">        ArrayList&lt;Integer&gt; returnList = new ArrayList&lt;&gt;();</span>
+        try {
+<span class="fc" id="L72">            Scanner scan = new Scanner(fileToCheck);</span>
+<span class="fc" id="L73">            scan.next();</span>
+<span class="fc" id="L74">            scan.next();</span>
+<span class="fc" id="L75">            scan.next();</span>
+<span class="fc" id="L76">            scan.next();</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">            while(scan.hasNextInt()) {</span>
+<span class="fc" id="L78">                returnList.add(scan.nextInt());</span>
+            }
+<span class="fc" id="L80">            scan.close();</span>
+<span class="fc" id="L81">        } catch (FileNotFoundException e) {</span>
+<span class="fc" id="L82">            throw new InvalidHistogramException(&quot;Error - File not found while creating Histogram&quot;);</span>
+<span class="fc" id="L83">        }</span>
+<span class="fc" id="L84">        return returnList;</span>
+    }
+    /**
+     * &lt;b&gt;Method - createMapFromList&lt;/b&gt;
+     * &lt;p&gt;This method creates a HashMap of the normalized histogram&lt;/p&gt;
+     * &lt;p&gt;This is used for faster access to the values now that we can know the location of them&lt;/p&gt;
+     * &lt;p&gt;The key for each value is an integer representing the index of the histogram array, and the value is the normalized value&lt;/p&gt;
+     */
+    private void createMapFromList() {
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        for(int i=0; i&lt;normalized.length; i++) {</span>
+<span class="fc" id="L94">            histMap.put(i, normalized[i]);</span>
+        }
+<span class="fc" id="L96">    }</span>
+    /**
+     * &lt;b&gt;Method - rangeCounter()&lt;/b&gt;
+     * &lt;p&gt;This method creates our histogram by counting the number of values in sets of fours, and increasing each 0-4 &quot;bucket&quot; by that amount&lt;/p&gt;
+     * &lt;p&gt;For example, every time it sees the number &quot;100,&quot; it calculates 100/4 = 25, and increases the 25th bucket of our histogram object by 1&lt;/p&gt;
+     * @param fileValues ArrayList created from the pgm file, created in createListFromFile()
+     * @return histogram object of ints
+     */
+    public static int[] rangeCounter(ArrayList&lt;Integer&gt; fileValues) {
+<span class="fc" id="L105">        int[] histogram = new int[HISTOGRAM_LENGTH];</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        for(Integer i : fileValues) {</span>
+<span class="fc" id="L107">            histogram[i/4] += 1;</span>
+<span class="fc" id="L108">        }</span>
+<span class="fc" id="L109">        return histogram;</span>
+    }
+    /**
+     * &lt;b&gt;Method - convertToDouble()&lt;/b&gt;
+     * &lt;p&gt;This method converts an int Histogram into a double Histogram object&lt;/p&gt;
+     * @param histogram int Histogram, as created by rangeCounter()
+     * @return double Histogram
+     */
+    public static double[] convertToDouble(int[] histogram) {
+<span class="fc" id="L118">        double[] dblHist = new double[HISTOGRAM_LENGTH];</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        for(int i=0; i&lt;histogram.length; i++) {</span>
+<span class="fc" id="L120">            dblHist[i] = (double) histogram[i];</span>
+        }
+<span class="fc" id="L122">        return dblHist;</span>
+    }
+
+    /**
+     * &lt;b&gt;Method - getSum()&lt;/b&gt;
+     * &lt;p&gt;This method takes in an array of doubles, and returns the sum of all of its values&lt;/p&gt;
+     * @param hist double array to evaluate
+     * @return sum of values
+     */
+    public static Double getSum(double[] hist) {
+<span class="fc" id="L132">        Double sum = 0.0;</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">        for(double d : hist) {</span>
+<span class="fc" id="L134">            sum += d;</span>
+        }
+<span class="fc" id="L136">        return sum;</span>
+    }
+    /**
+     * &lt;b&gt;Method - normalize()&lt;/b&gt;
+     * &lt;p&gt;This method takes in an array of doubles (a histogram) and the sum of its values, and returns a normalized version of it.&lt;/p&gt;
+     * &lt;p&gt;The normalization process, as described earlier, is simply dividing each value by the sum of all the values&lt;/p&gt;
+     * @param hist histogram array
+     * @param sum sum of values of the histogram array
+     * @return normalized array
+     */
+    public static double[] normalize(double[] hist, Double sum) {
+<span class="fc" id="L147">        double[] result = new double[hist.length];</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        for(int i=0; i&lt;hist.length; i++) {</span>
+<span class="fc" id="L149">            result[i] = hist[i] / sum;</span>
+        }
+<span class="fc" id="L151">        return result;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L156">        String toReturn = &quot;&quot;;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        for(double d : normalized) {</span>
+<span class="fc" id="L158">            toReturn = toReturn + d + &quot; &quot;;</span>
+        }
+<span class="fc" id="L160">        return toReturn.trim();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

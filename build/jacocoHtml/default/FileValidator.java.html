@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FileValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pa9-nawrigh7</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">FileValidator.java</span></div><h1>FileValidator.java</h1><pre class="source lang-java linenums">import java.io.*;
+import java.util.Scanner;
+/**
+ * &lt;b&gt;Class - FileValidator&lt;/b&gt;
+ * &lt;p&gt;This class is used to validate files for use in this program&lt;/p&gt;
+ * &lt;p&gt;This is a parent class. The child classes are:&lt;/p&gt;
+ *  &lt;ul&gt;
+ *      &lt;li&gt;TxtValidator&lt;/li&gt;
+ *      &lt;li&gt;PgmValidator&lt;/li&gt;
+ *  &lt;/ul&gt;
+ */
+public class FileValidator {
+
+    /*
+     * Class Members
+     */
+    String fileName;
+    File inputFile;
+    Scanner scan;
+    boolean isValid;
+
+    /**
+     * &lt;b&gt;Constructor - Default&lt;/b&gt;
+     * &lt;p&gt;This is the default constructor, and does not do much&lt;/p&gt;
+     */
+<span class="fc" id="L26">    public FileValidator() {</span>
+<span class="fc" id="L27">        this.fileName = &quot;&quot;;</span>
+<span class="fc" id="L28">        this.isValid = false;</span>
+<span class="fc" id="L29">    }</span>
+
+    /**
+     * &lt;b&gt;Constructor - FileValidator&lt;/b&gt;
+     * &lt;p&gt;This constructor creates a generic FileValidator&lt;/p&gt;
+     * &lt;p&gt;This object can be used to store a text file, and automatically checks that it exists and is non-empty&lt;/p&gt;
+     * @param fileName Name of the file to store
+     * @throws FileNotFoundException if the file does not exist in the given path
+     * @throws InvalidFileException thrown if the file does not exist or is empty
+     */
+<span class="fc" id="L39">    public FileValidator(String fileName) throws FileNotFoundException, InvalidFileException {</span>
+<span class="fc" id="L40">        this.fileName = fileName;</span>
+<span class="fc" id="L41">        this.inputFile = new File(this.fileName).getAbsoluteFile();</span>
+<span class="pc bpc" id="L42" title="2 of 4 branches missed.">        if(exists(this.inputFile) &amp;&amp; notEmpty(this.inputFile)) {</span>
+<span class="fc" id="L43">            this.isValid = true;</span>
+        }
+
+<span class="fc" id="L46">    }</span>
+
+    /**
+     * &lt;b&gt;Method - exists()&lt;/b&gt;
+     * &lt;p&gt;This method determines if a supplied file exists or not, and returns true if so.&lt;/p&gt;
+     * &lt;p&gt;Otherwise, it throws an exception&lt;/p&gt;
+     * 
+     * @return boolean value, true if file exists
+     * @param fileToTest the file we are checking if exists or not
+     * @throws InvalidFileException error to throw if the file does not exist
+     * @throws FileNotFoundException if a file is not found
+     */
+    protected boolean exists(File fileToTest) throws InvalidFileException, FileNotFoundException{
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if(fileToTest.exists()) {</span>
+<span class="fc" id="L60">            return true;</span>
+        }else {
+<span class="fc" id="L62">            throw new InvalidFileException(&quot;Error - the filename (&quot; + fileToTest.getPath() + &quot;) supplied at the command line does not exist.&quot;);</span>
+        }
+    }
+
+    /**
+     * &lt;b&gt;Method - empty()&lt;/b&gt;
+     * &lt;p&gt;This method determines if a file is empty or not, and returns true if it is not empty.&lt;/p&gt;
+     * &lt;p&gt;Otherwise, it throws an exception&lt;/p&gt;
+     * 
+     * @return true iff the file is not empty
+     * @param fileToTest the file we are checking if it is empty or not
+     * @throws InvalidFileException Exception to throw
+     * @throws FileNotFoundException Thrown if file is not found
+     */
+    protected boolean notEmpty(File fileToTest) throws InvalidFileException, FileNotFoundException{
+<span class="fc" id="L77">        scan = new Scanner(fileToTest);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if(scan.hasNext()) {</span>
+<span class="fc" id="L79">            scan.close();</span>
+<span class="fc" id="L80">            return true;</span>
+        }else {
+<span class="fc" id="L82">            scan.close();</span>
+<span class="fc" id="L83">            throw new InvalidFileException(&quot;Error - the supplied file was found to be empty&quot;);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

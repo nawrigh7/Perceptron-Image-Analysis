@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Cluster.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pa9-nawrigh7</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Cluster.java</span></div><h1>Cluster.java</h1><pre class="source lang-java linenums">import java.util.ArrayList;
+import java.util.Collections;
+
+/**
+ * &lt;b&gt;Class - Cluster&lt;/b&gt;
+ * &lt;p&gt;This class is used to group Histograms together by similarity.&lt;/p&gt;
+ */
+public class Cluster {
+
+    /*
+     * Class members
+     */
+    static final int MAXIMUM_LENGTH = 64;
+<span class="pc" id="L14">    ArrayList&lt;Histogram&gt; histList = new ArrayList&lt;&gt;();</span>
+<span class="pc" id="L15">    ArrayList&lt;String&gt; namesList = new ArrayList&lt;&gt;();</span>
+<span class="pc" id="L16">    ArrayList&lt;Perceptron&gt; clusterPerceptronList = new ArrayList&lt;&gt;();</span>
+    // The clusterHistogram will be stored as the average of all of the Histograms objects in the clusters'
+    // normalized histograms.
+<span class="pc" id="L19">    double[] clusterHistogram = new double[MAXIMUM_LENGTH];</span>
+<span class="pc" id="L20">    int numInCluster = 0;</span>
+    //double similarityMeasure = 0; // This equates to the y_nj in the equation from the assignment. Use this in the equation when comparing to new images
+
+    /**
+     * &lt;b&gt;Constructor - Cluster Default&lt;/b&gt;
+     * &lt;p&gt;This constructor does not initialize any values other than its class members&lt;/p&gt;
+     * &lt;p&gt;This is primarily useful for creating cluster objects that you expect to need, but do not yet have Histograms to add to&lt;/p&gt;
+     */
+<span class="fc" id="L28">    public Cluster() {</span>
+<span class="fc" id="L29">    }</span>
+
+    /**
+     * &lt;b&gt;Constructor - Cluster(Histogram)&lt;/b&gt;
+     * &lt;p&gt;This constructor takes in a Histogram object and adds it to the cluster&lt;/p&gt;
+     * &lt;p&gt;This involves increasing the numInCluster value, and re-averaging the normalized versions of each histogram to create a representative histogram for the cluster.&lt;/p&gt;
+     * @param h Histogram to add
+     */
+<span class="fc" id="L37">    public Cluster(Histogram h) {</span>
+<span class="fc" id="L38">        addToCluster(h);</span>
+<span class="fc" id="L39">    }</span>
+
+    /**
+     * &lt;b&gt;Constructor - Cluster(ArrayList(Histogram))&lt;/b&gt;
+     * &lt;p&gt;This constructor takes an ArrayList of Histogram objects, for ease of creating a large cluster&lt;/p&gt;
+     * &lt;p&gt;Similar to creating a Cluster with one Histogram, this calls the addToCluster method for each Histogram in the ArrayList&lt;/p&gt;
+     * @param histList List of Histograms to add to the cluster
+     */
+<span class="nc" id="L47">    public Cluster(ArrayList&lt;Histogram&gt; histList) {</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        for(Histogram h : histList) {</span>
+<span class="nc" id="L49">            addToCluster(h);</span>
+<span class="nc" id="L50">        }</span>
+<span class="nc" id="L51">    }</span>
+
+    //When adding a histogram to the cluster, add it to the ArrayList for filename storage
+    //And then add its histogram to the
+    /**
+     * &lt;b&gt;Method - addToCluster(Histogram)&lt;/b&gt;
+     * &lt;p&gt;This method will allow one to add any given Histogram object to the cluster by adding it to the ArrayList, re-evaluating the average histogram, and increasing the numInCluster&lt;/p&gt;
+     * &lt;p&gt;This can be done to any Cluster, no matter how many histograms it already contains&lt;/p&gt;
+     * @param h Histogram to add
+     */
+    public void addToCluster(Histogram h) {
+<span class="fc" id="L62">        this.numInCluster++;</span>
+<span class="fc" id="L63">        this.histList.add(h);</span>
+<span class="fc" id="L64">        this.namesList.add(h.fileName);</span>
+<span class="fc" id="L65">        createAverageHistogram();</span>
+        //calculateSimilarity();
+<span class="fc" id="L67">    }</span>
+
+    /**
+     * &lt;b&gt;Method - addToCluster(Cluster)&lt;/b&gt;
+     * &lt;p&gt;This method will allow one to add any given Cluster object to the cluster, essentially merging them&lt;/p&gt;
+     * &lt;p&gt;This is done in much the same way as adding an individual cluster, however it will iterate through all Histograms contained in a cluster to add them&lt;/p&gt;
+     * @param c Cluster object to add
+     */
+    public void addToCluster(Cluster c) {
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        for(Histogram h : c.histList) {</span>
+<span class="fc" id="L77">            addToCluster(h);</span>
+<span class="fc" id="L78">        }</span>
+<span class="fc" id="L79">    }</span>
+
+    /**
+     * &lt;b&gt;Method - removeFromCluster&lt;/b&gt;
+     * &lt;p&gt;This method will remove a Histogram from the cluster, and re-configure its comparative histogram&lt;/p&gt;
+     * @param histName The name of the file to remove from the cluster
+     * @return The removed Histogram object
+     * @throws ClusterException Thrown if the requested Histogram is not found in the cluster.
+     */
+    public Histogram removeFromCluster(String histName) throws ClusterException {
+<span class="fc" id="L89">        this.numInCluster--;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        for(int i=0; i&lt;histList.size(); i++) {</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">            if(histList.get(i).fileName.equals(histName)){</span>
+<span class="fc" id="L92">                removeName(histName);</span>
+<span class="fc" id="L93">                return histList.remove(i);       </span>
+            }
+        }
+<span class="fc" id="L96">        throw new ClusterException(&quot;Error - that Histogram is not in this cluster&quot;);</span>
+    }
+
+    /**
+     * &lt;b&gt;Method - removeName&lt;/b&gt;
+     * &lt;p&gt;Called from removeFromCluster, this method removes the name of a Histogram from the Cluster's namesList&lt;/p&gt;
+     * @param nameToRemove name of the histogram to remove
+     */
+    private void removeName(String nameToRemove) {
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        for(int i=0; i&lt;this.namesList.size(); i++) {</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">            if(namesList.get(i).equals(nameToRemove)){</span>
+<span class="fc" id="L107">                namesList.remove(i);</span>
+            }
+        }
+<span class="fc" id="L110">    }</span>
+
+    /**
+     * &lt;b&gt;Method - createAverageHistogram&lt;/b&gt;
+     * &lt;p&gt;This method creates an average histogram from all of the histogram objects it contains&lt;/p&gt;
+     * &lt;p&gt;This average is used to allow comparison to the cluster as a whole&lt;/p&gt;
+     */
+    private void createAverageHistogram() {
+        // Ensure our cluster Histogram is cleared
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        for(int i=0; i&lt;this.clusterHistogram.length; i++) {</span>
+<span class="fc" id="L120">            clusterHistogram[i] = 0;</span>
+        }
+        // Add the value from the index of each Histogram in the histList, then divide by numInCluster
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        for(int i=0; i&lt;this.clusterHistogram.length; i++) {</span>
+<span class="fc" id="L124">            clusterHistogram[i] += getAverageValue(i);</span>
+        }
+<span class="fc" id="L126">    }</span>
+    /**
+     * &lt;b&gt;Method getAverageValue(int)&lt;/b&gt;
+     * &lt;p&gt;This method returns the average value from the [index] place of every Histogram object in the Cluster&lt;/p&gt;
+     * @param index The index of the normalized histogram to access
+     * @return Average of all values
+     */
+    private double getAverageValue(int index) {
+<span class="fc" id="L134">        double avg = 0;</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        for(int i=0; i&lt;this.histList.size(); i++) {</span>
+<span class="fc" id="L136">            avg += histList.get(i).normalized[index];</span>
+        }
+<span class="fc" id="L138">        return avg / numInCluster;</span>
+    }
+
+    /**
+     * &lt;b&gt;Method - setPerceptron&lt;/b&gt;
+     * &lt;p&gt;Each cluster object may have an ArrayList of Perceptron objects associated with it, to allow for similarity measures from Perceptron training to be used for comparison&lt;/p&gt;
+     * &lt;p&gt;This method simply assigns the class member to the argument&lt;/p&gt;
+     * @param clusterPerceptronList List of perceptrons to assign to this cluster
+     */
+    public void setPerceptrons(ArrayList&lt;Perceptron&gt; clusterPerceptronList) {
+<span class="fc" id="L148">        this.clusterPerceptronList = clusterPerceptronList;</span>
+        //calculateSimilarity();
+<span class="fc" id="L150">    }</span>
+
+    /**
+     * &lt;b&gt;@Override method - toString&lt;/b&gt;
+     * &lt;p&gt;This method override's the parent Object toString() method to allow Cluster objects to return a printable String&lt;/p&gt;
+     */
+    @Override
+    public String toString() {
+<span class="fc" id="L158">        Collections.sort(this.namesList);</span>
+<span class="fc" id="L159">        String result = &quot;&quot;;</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        for(String s : namesList) {</span>
+<span class="fc" id="L161">            result = result + &quot; &quot; + s;</span>
+<span class="fc" id="L162">        }</span>
+<span class="fc" id="L163">        return result.trim();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

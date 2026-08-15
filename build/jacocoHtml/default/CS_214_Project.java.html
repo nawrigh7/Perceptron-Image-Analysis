@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CS_214_Project.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pa9-nawrigh7</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">CS_214_Project.java</span></div><h1>CS_214_Project.java</h1><pre class="source lang-java linenums">import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+/**
+ * &lt;b&gt;Class - CS_214_Project&lt;/b&gt;
+ * &lt;p&gt;Runtime class, used to take in command line args and execute program&lt;/p&gt;
+ */
+<span class="fc" id="L10">public class CS_214_Project {</span>
+    /*
+     * Class Members
+     */
+    static final String expectedExtension = &quot;.txt&quot;;
+<span class="fc" id="L15">    static HashMap&lt;Integer, ArrayList&lt;Histogram&gt;&gt; trainingHistogramsByClass = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L16">    static ArrayList&lt;Histogram&gt; allTrainingHistograms = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L17">    static ArrayList&lt;Histogram&gt; testHistogramsList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L18">    static ArrayList&lt;Perceptron&gt; perceptronList = new ArrayList&lt;&gt;();</span>
+    // The following three class members are instantiated during the checkArgs method
+    static String trainingSet; //args[0]
+    static String imageSet; //args[1]
+    static int numClusters; //args[2]
+
+
+        //  /\_/\  
+        // ( o.o ) {Welcome to the Final Countdown}
+        //  &gt; ^ &lt; 
+        // &quot;The end of a melody is not its goal: but nonetheless, had the melody not reached its end it would not have reached its goal either.&quot; --Someone 
+    /**
+     * &lt;b&gt;Method - main&lt;/b&gt;
+     * &lt;p&gt;Execution method for the program&lt;/p&gt;
+     * @param args Command line arguments provided by user
+     * @throws ExtensionException Thrown if a supplied file is not a .txt file, in this case
+     * @throws PgmException PgmValidator exception handling
+     * @throws InvalidFileException File Validator exception handling (PgmValidator parent class)
+     * @throws FileNotFoundException If files are nonexistant
+     * @throws InvalidHistogramException Error handling for Histogram Objects
+     * @throws ArgsException 
+     */
+    public static void main(String[] args) throws ExtensionException, FileNotFoundException, InvalidFileException, PgmException, InvalidHistogramException, ArgsException {
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if(args.length != 3) {</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">            if(args.length == 0) {</span>
+<span class="fc" id="L43">                throw new ArgsException(&quot; No arguments were provided. Please provide the filenames of a training set.txt, a testing set.txt, and the number of desired clusters&quot;);</span>
+            }
+<span class="fc" id="L45">            throw new ArgsException(&quot; invalid number of arguments. Please provide the names for two text files, and the integer number of clusters you would like created.&quot;);</span>
+        }
+        //long start = System.currentTimeMillis();
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">        if(checkArgs(args)){</span>
+<span class="fc" id="L49">            run(args);</span>
+        }
+        //long end = System.currentTimeMillis();
+        //String printableTime = &quot;Time to run: &quot; + (end-start);
+        //System.out.println(printableTime);
+<span class="fc" id="L54">    }</span>
+
+    /**
+     * &lt;b&gt;Method - run&lt;/b&gt;
+     * &lt;p&gt;Flow control method - taking responsibilities out of main, this method executes the functionalities of the program as specified&lt;/p&gt;
+     * @param args The arguments provided at command line
+     * @throws ExtensionException Used for extension error handling
+     * @throws PgmException PgmValidator exception handling
+     * @throws InvalidFileException File Validator exception handling (PgmValidator parent class)
+     * @throws FileNotFoundException If files are nonexistant
+     * @throws InvalidHistogramException Error handling for Histogram objects
+     * @throws ArgsException thrown if arguments are invalid
+    */
+    private static void run(String[] args) throws ExtensionException, FileNotFoundException, InvalidFileException, PgmException, InvalidHistogramException, ArgsException {
+<span class="fc" id="L68">        PgmValidator trainingImages = new PgmValidator(trainingSet);</span>
+<span class="fc" id="L69">        trainingImages.validate();</span>
+<span class="fc" id="L70">        PgmValidator imagesToCompare = new PgmValidator(imageSet);</span>
+<span class="fc" id="L71">        imagesToCompare.validate();</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if(trainingImages.numOfClasses &lt; 2) {</span>
+<span class="fc" id="L73">            throw new PgmException(&quot;Error - there must be at least 2 unique classes in the training set.&quot;);</span>
+        }
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">        if(numClusters &gt; imagesToCompare.imageList.size()) {</span>
+<span class="nc" id="L76">            throw new ArgsException(&quot;Error - there are not enough images to create that many clusters.&quot;);</span>
+        }
+<span class="pc bpc" id="L78" title="2 of 4 branches missed.">        if(trainingImages.isValid &amp;&amp; imagesToCompare.isValid) {</span>
+<span class="fc" id="L79">            createHistograms(trainingImages, imagesToCompare);</span>
+        }
+<span class="fc" id="L81">        createPerceptrons();</span>
+<span class="fc" id="L82">        ArrayList&lt;Cluster&gt; clusterList = createClusters();</span>
+
+<span class="fc" id="L84">        Agglomerative aggloCluster = new Agglomerative(clusterList, numClusters);</span>
+
+        //Finished product
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">        if(aggloCluster.clusteringComplete) {</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">            for(int i=0; i&lt;numClusters; i++) {</span>
+<span class="fc" id="L89">                System.out.println(aggloCluster.clusterList.get(i));</span>
+            }
+        }
+        
+<span class="fc" id="L93">    }</span>
+
+    /**
+     * &lt;b&gt;Method - checkArgs&lt;/b&gt;
+     * &lt;p&gt;This method checks that the provided arguments are valid for use in this program's functionality&lt;/p&gt;
+     * &lt;p&gt;This would mean that the first and second arguments are filenames for .txt files, and the third is a positive integer&lt;/p&gt;
+     * @param args arguments provided at command line
+     * @return true iff all arguments are valid
+     * @throws ExtensionException Used for error handling regarding the file type of the first two arguments
+     * @throws ArgsException Used for error handling regarding the third argument (negative, not an integer, etc.)
+     */
+    private static boolean checkArgs(String[] args) throws ExtensionException, ArgsException {
+<span class="fc" id="L105">        trainingSet = args[0];</span>
+<span class="fc" id="L106">        imageSet = args[1];</span>
+        try{
+<span class="fc" id="L108">            numClusters = Integer.parseInt(args[2]);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">            if(numClusters &lt; 1) {</span>
+<span class="fc" id="L110">                throw new ArgsException(&quot;Error - the third argument should be a positive integer value. The entered value of &quot; + args[2] + &quot; is invalid.&quot;);</span>
+            }
+<span class="fc" id="L112">        } catch(NumberFormatException e) {</span>
+<span class="fc" id="L113">            throw new ArgsException(&quot;Error - the third argument should be a positive integer value. Entered value of &quot; + args[2] + &quot; is invalid.&quot;);</span>
+<span class="fc" id="L114">        }</span>
+<span class="fc" id="L115">        ExtensionChecker txtChecker = new ExtensionChecker(expectedExtension);</span>
+        
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        if(!txtChecker.checkExtension(trainingSet)) {</span>
+<span class="fc" id="L118">            throw new ExtensionException(&quot;Error - the file provided for perceptron training was not of the expected .txt type. Please try again with a text file!&quot;);</span>
+        }
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        if(!txtChecker.checkExtension(imageSet)) {</span>
+<span class="fc" id="L121">            throw new ExtensionException(&quot;Error - the file provided as the depth image set was not of the expected .txt type. Please try again with a text file!&quot;);</span>
+        }
+<span class="fc" id="L123">        return true;</span>
+    }
+
+    /**
+     * &lt;b&gt;Method - createHistograms&lt;/b&gt;
+     * &lt;p&gt;This method accepts two PgmValidator objects (created from the provided arguments in the run method)&lt;/p&gt;
+     * &lt;p&gt;It then populates two data structures:&lt;/p&gt;
+     * &lt;ul&gt;
+     *      &lt;li&gt;1 - The trainingHistogramsByClass HashMap, which will be arranged in (key, value) pairs as (class, ArrayList of Histograms of that class)&lt;/li&gt;
+     *      &lt;li&gt;2 - The testHistogramsList, which is an ArrayList of Histogram objects created from our test images set, to test our perceptrons against later.&lt;/li&gt;
+     * &lt;/ul&gt;
+     * @param trainingImages The set of images used to train our perceptrons, arg[0]
+     * @param imagesToCompare The set of images to compare to our perceptrons, arg[1]
+     * @throws InvalidHistogramException Histogram object error handling
+    */
+    private static void createHistograms(PgmValidator trainingImages, PgmValidator imagesToCompare) throws InvalidHistogramException {
+<span class="fc" id="L139">        trainingImages.imagesByClass.forEach( (key, value) -&gt; {</span>
+            // Within this forEach, the key represents each class, and the value represents an ArrayList of .pgm image File objects.
+            // The goal is to create a mirrored HashMap where the key is the class, and the value is an ArrayList of Histogram objects made from those image files.
+            // In theory - for each class in trainingImagesByClass, add that class to this hashMap, and populate the ArrayList&lt;Histogram&gt; value to that class
+            // Then, we can create a Perceptron for each class from this hashMap easily.
+<span class="fc" id="L144">            trainingHistogramsByClass.put(key, new ArrayList&lt;Histogram&gt;());</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">            for(File f : value) {</span>
+                try {
+<span class="fc" id="L147">                    trainingHistogramsByClass.get(key).add(new Histogram(f));</span>
+<span class="fc" id="L148">                    allTrainingHistograms.add(new Histogram(f));</span>
+<span class="nc" id="L149">                } catch (InvalidHistogramException e) {</span>
+                    // This SHOULD never occur, at this stage.
+<span class="nc" id="L151">                    e.printStackTrace();</span>
+<span class="fc" id="L152">                }</span>
+<span class="fc" id="L153">            }</span>
+<span class="fc" id="L154">        });</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        for(File image : imagesToCompare.imageList) {</span>
+<span class="fc" id="L156">            testHistogramsList.add(new Histogram(image));</span>
+<span class="fc" id="L157">        }</span>
+<span class="fc" id="L158">    }</span>
+    
+    /**
+     * &lt;b&gt;Method - createPerceptrons&lt;/b&gt;
+     * &lt;p&gt;This method populates the ArrayList of Perceptron objects from each of the ArrayList of Histograms in our trainingHistogramsByClass HashMap&lt;/p&gt;
+     * &lt;p&gt;It then calls trainPerceptrons, which will epoch each perceptron 100 times on their respective dataset&lt;/p&gt;
+     */
+    private static void createPerceptrons() {
+<span class="fc" id="L166">        trainingHistogramsByClass.forEach( (key, value) -&gt; {</span>
+            //perceptronList.add(new Perceptron(value, key)); // This statement assigns each Perceptron to only train based on the expected class. i.e., class1 =&gt; Perceptron 1, class2 =&gt; Perceptron 2, etc.
+<span class="fc" id="L168">            perceptronList.add(new Perceptron(allTrainingHistograms, key)); // This statement assigns all perceptrons to be assigned, and indicates a &quot;classness value&quot; for each perceptron (&quot;d&quot; in the Perceptron equation)</span>
+<span class="fc" id="L169">        });</span>
+
+<span class="fc" id="L171">        trainPerceptrons();</span>
+<span class="fc" id="L172">    }</span>
+
+    /**
+     * &lt;b&gt;Method - trainPerceptrons&lt;/b&gt;
+     * &lt;p&gt;This method trains the Perceptrons from the provided training set (args[0])&lt;/p&gt;
+     * &lt;p&gt;This means it runs the epoch method for the assigned number of times (in this situation, it is 100)&lt;/p&gt;
+     */
+    private static void trainPerceptrons() {
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        for(Perceptron ai : perceptronList) {</span>
+<span class="fc" id="L181">            ai.epoch(100);</span>
+<span class="fc" id="L182">        }</span>
+<span class="fc" id="L183">    }</span>
+
+    /**
+     * &lt;b&gt;Method - createClusters&lt;/b&gt;
+     * &lt;p&gt;This method creates and returns an ArrayList of Cluster objects&lt;/p&gt;
+     * &lt;p&gt;The number of clusters created is equal to the number of images in the test set.&lt;/p&gt;
+     * &lt;p&gt;These will then be combined using agglomerative clustering based on perceptron similarity measures&lt;/p&gt;
+     * @return ArrayList of Cluster objects with size = number of test images
+     */
+    private static ArrayList&lt;Cluster&gt; createClusters() {
+<span class="fc" id="L193">        ArrayList&lt;Cluster&gt; clusterList = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        for(Histogram image : testHistogramsList) {</span>
+<span class="fc" id="L195">            clusterList.add(new Cluster(image));</span>
+<span class="fc" id="L196">        }</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">        for(Cluster c : clusterList) {</span>
+<span class="fc" id="L198">            c.setPerceptrons(perceptronList);</span>
+<span class="fc" id="L199">        }</span>
+<span class="fc" id="L200">        return clusterList;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
