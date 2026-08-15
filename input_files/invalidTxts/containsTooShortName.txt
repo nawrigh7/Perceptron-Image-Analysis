@@ -1,0 +1,3 @@
+input_files/test/class0_1.pgm
+no
+input_files/test/class0_2.pgm

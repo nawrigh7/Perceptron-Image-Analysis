@@ -1,0 +1,4 @@
+input_files/test/class0_1.pgm
+input_files/test/class0_2.pgm
+input_files/test/class0_3.pgm
+input_files/invalidTxts/errorCases/blass00_0.pgm
